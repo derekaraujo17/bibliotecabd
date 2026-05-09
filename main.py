@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import streamlit as st
 from login import mostrar_login
 from principal import mostrar_principal
+from menuadmin import mostrar_menu_admin
 
 load_dotenv()
 st.set_page_config(page_title="Biblioteca", layout="wide")
@@ -20,3 +21,5 @@ if st.session_state["pantalla_actual"] == "login":
     mostrar_login()
 elif st.session_state["pantalla_actual"] == "principal":
     mostrar_principal()
+elif st.session_state["pantalla_actual"] == "menuadmin":
+    mostrar_menu_admin()

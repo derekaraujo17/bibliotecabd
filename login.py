@@ -1,6 +1,7 @@
 import streamlit as st
 import base64
 import os
+from helpers import render_header
 
 def obtener_imagen_base64(rutaImagen):
     _, extension = os.path.splitext(rutaImagen)
@@ -14,11 +15,11 @@ def obtener_imagen_base64(rutaImagen):
     
 def mostrar_login():
     try:
-        with open("bibliotecabd/login.css", "r") as f:
+        with open("estilosGlobales.css", "r") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
         st.warning("No se encontró el archivo login.css")
-
+    render_header()
     st.markdown("<h1 class='titulo-login'>BUHOBLIOTECA</h1>", unsafe_allow_html=True)
     
     usuario = st.text_input("Ingresa tu nombre de usuario")
