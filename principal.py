@@ -19,6 +19,6 @@ def mostrar_principal():
     if st.session_state['rol'] == 'admin':
         st.write("¿A dónde deseas ir?")
         
-        if st.button("Gestión de Empleados (Paso 8) ➔"):
+        if st.button("Gestión de Empleados ➔"):
             st.session_state["pantalla_actual"] = "menuadmin"
             st.rerun()

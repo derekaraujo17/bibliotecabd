@@ -26,7 +26,7 @@ def registrar_empleado(codigo, nombre, direccion, telefono, sexo, fecha_nac, tur
         try:
             cursor = conexion.cursor()
             query = """
-            INSERT INTO public.empleado (codigo, nombre, dirección, teléfono, sexo, fecha_de_nac, turno)
+            INSERT INTO public.empleado (codigo, nombre, direccion, telefono, sexo, fecha_de_nac, turno)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(query, (codigo, nombre, direccion, telefono, sexo, fecha_nac, turno))
@@ -45,7 +45,7 @@ def obtener_empleados():
     if conexion:
         try:
             cursor = conexion.cursor()
-            query = "SELECT codigo, nombre, dirección, teléfono, sexo, fecha_de_nac, turno FROM public.empleado ORDER BY codigo;"
+            query = "SELECT codigo, nombre, direccion, telefono, sexo, fecha_de_nac, turno FROM public.empleado ORDER BY codigo;"
             cursor.execute(query)
             
             registros = cursor.fetchall()

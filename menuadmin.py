@@ -2,6 +2,7 @@ import streamlit as st
 from helpers import render_header
 from database import registrar_empleado, obtener_empleados
 import pandas as pd
+from datetime import date
 
 def mostrar_menu_admin():
     render_header()
@@ -30,7 +31,10 @@ def mostrar_menu_admin():
             with col_b:
                 telefono = st.text_input("Teléfono")
                 sexo = st.selectbox("Sexo", ["F", "M"])
-                fecha_nac = st.date_input("Fecha de Nacimiento")
+                fecha_nac = st.date_input("Fecha de Nacimiento",
+                                          min_value=date(1950,1,1),
+                                          max_value=date.today(),
+                                          format="DD/MM/YYYY")
                 turno = st.selectbox("Turno", ["Matutino", "Vespertino"])
 
             submit = st.form_submit_button("Guardar Empleado")
