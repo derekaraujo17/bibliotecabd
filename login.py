@@ -19,14 +19,17 @@ def mostrar_login():
     except FileNotFoundError:
         st.warning("No se encontró el archivo login.css")
 
-    st.markdown("<h1 class='titulo-login'>Biblioteca pro</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='titulo-login'>BUHOBLIOTECA</h1>", unsafe_allow_html=True)
     
     usuario = st.text_input("Ingresa tu nombre de usuario")
-    
     contrasena = st.text_input("Ingresa tu contraseña", type="password") 
 
     if st.button("Iniciar Sesión"):
-        if usuario and contrasena:
-            st.info(f"Procesando login para: {usuario}...") 
+        if usuario == "administrador" and contrasena == "admin123":
+            st.session_state["logueado"] = True
+            st.session_state["usuario"] = usuario
+            st.session_state["rol"] = "admin"
+            st.session_state["pantalla_actual"] = "principal"
+            st.rerun()
         else:
-            st.error("Por favor, llena ambos campos.")
+            st.error("Usuario o contraseña incorrectos.")
