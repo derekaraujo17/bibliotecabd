@@ -20,6 +20,26 @@ def conectar_bd():
     except Error as e:
         print(f"Conexion fallada: {e}")
 
+def validar_usuario(usuario, contrasena):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = "SELECT rol FROM public.usuario WHERE nombre_del_usuario = %s AND contrasena = %s;"
+            cursor.execute(query, (usuario, contrasena)) 
+            resultado = cursor.fetchone()
+
+            if resultado:
+                return resultado[0]
+            return None
+        except Exception as e:
+            print(f"Error en validación: {e}")
+            return None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None    
+
 def registrar_empleado(codigo, nombre, direccion, telefono, sexo, fecha_nac, turno):
     conexion = conectar_bd()
     if conexion:
