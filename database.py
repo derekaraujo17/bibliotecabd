@@ -134,6 +134,26 @@ def registrar_empleado(codigo, nombre, direccion, telefono, sexo, fecha_nac, tur
             conexion.close()
     return False
 
+def registrar_alumno(codigo,nombre,carrera,correo,direccion,telefono,sexo,fecha_nac):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """
+            INSERT INTO public.alumno (codigo, nombre, carrera, correo, direccion, telefono, sexo, fecha_nac)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, (codigo,nombre,carrera,correo,direccion,telefono,sexo,fecha_nac))
+            conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al registrar: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
 def obtener_empleados():
     conexion = conectar_bd()
     if conexion:
