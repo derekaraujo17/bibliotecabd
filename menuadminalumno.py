@@ -1,6 +1,6 @@
 import streamlit as st
 from helpers import render_header
-from database import registrar_alumno
+from database import registrar_alumno, obtener_alumnos
 import pandas as pd
 from datetime import date
 
@@ -43,3 +43,11 @@ def mostrar_menu_admin_alumno():
                         st.success(f"Alumno '{nombre}' registrado correctamente.")
                     else:
                         st.error("Error al registrar en la base de datos. Verifica que el código o correo no estén repetidos.")
+    elif opcion == "Consulta General":
+        st.subheader("Direcctorio General de Alumnos")
+        datos, columnas = obtener_alumnos()
+        if datos:
+            df_alumnos = pd.DataFrame(datos, columns=columnas)
+            st.dataframe(df_alumnos, use_container_width=True, hide_index=True)
+        else:
+            st.info("Actualmente no hay alumnos registrados en la base de datos.")

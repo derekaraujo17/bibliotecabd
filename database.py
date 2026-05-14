@@ -174,3 +174,22 @@ def obtener_empleados():
             cursor.close()
             conexion.close()
     return None, None
+
+def obtener_alumnos():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = "SELECT codigo, nombre, carrera, correo, direccion, telefono, sexo, fecha_nac FROM public.alumno ORDER BY codigo;"
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
+
+            return registros, nombres_columnas
+        except Exception as e:
+            print(f"Error al consultar: {e}")
+            return None, None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None, None
