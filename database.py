@@ -154,6 +154,25 @@ def registrar_alumno(codigo,nombre,carrera,correo,direccion,telefono,sexo,fecha_
             conexion.close()
     return False
 
+def registrar_profesor(codigo, nombre, direccion, telefono, sexo, fecha_nac, departamento,correo):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """
+            INSERT INTO public.profesor (codigo, nombre, direccion, telefono, sexo, fecha_nac, departamento, correo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+            cursor.execute(query, (codigo,nombre,direccion,telefono,sexo,fecha_nac,departamento,correo))
+            conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al registrar: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
 def obtener_empleados():
     conexion = conectar_bd()
     if conexion:
@@ -181,6 +200,25 @@ def obtener_alumnos():
         try:
             cursor = conexion.cursor()
             query = "SELECT codigo, nombre, carrera, correo, direccion, telefono, sexo, fecha_nac FROM public.alumno ORDER BY codigo;"
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
+
+            return registros, nombres_columnas
+        except Exception as e:
+            print(f"Error al consultar: {e}")
+            return None, None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None, None
+
+def obtener_profesores():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = "SELECT codigo, nombre, direccion, telefono, sexo, fecha_nac, departamento, correo FROM public.profesor ORDER BY codigo;"
             cursor.execute(query)
             registros = cursor.fetchall()
             nombres_columnas = [desc[0].capitalize() for desc in cursor.description]

@@ -25,6 +25,9 @@ def mostrar_principal():
         if st.button("Gestión de Alumnos"):
             st.session_state["pantalla_actual"] = "menuadminalumno"
             st.rerun()
+        if st.button("Gestión de Profesores"):
+            st.session_state["pantalla_actual"] = "menuadminprofesor"
+            st.rerun()
     elif rol == "empleado":
         st.write("Bienvenido, Staff")
     elif rol == "usuario":
