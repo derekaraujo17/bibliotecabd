@@ -30,6 +30,9 @@ def mostrar_principal():
             st.rerun()
     elif rol == "empleado":
         st.write("Bienvenido, Staff")
+        if st.button("Gestión de Libros"):
+            st.session_state["pantalla_actual"] = "menulibros"
+            st.rerun()
     elif rol == "usuario":
         st.write("Bienvenido, usuario")
     else:

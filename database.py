@@ -173,6 +173,25 @@ def registrar_profesor(codigo, nombre, direccion, telefono, sexo, fecha_nac, dep
             conexion.close()
     return False
 
+def registrar_libros(ISBN, titulo, autores, editorial, anio_publicacion, num_ejemplar):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """
+            INSERT INTO public.libro(ISBN, titulo, autores, editorial, anio_publicacion,num_ejemplar)
+            VALUES (%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(query, (ISBN, titulo, autores, editorial, anio_publicacion, num_ejemplar))
+            conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al registrar: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
 def obtener_empleados():
     conexion = conectar_bd()
     if conexion:
@@ -219,6 +238,25 @@ def obtener_profesores():
         try:
             cursor = conexion.cursor()
             query = "SELECT codigo, nombre, direccion, telefono, sexo, fecha_nac, departamento, correo FROM public.profesor ORDER BY codigo;"
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
+
+            return registros, nombres_columnas
+        except Exception as e:
+            print(f"Error al consultar: {e}")
+            return None, None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None, None
+
+def obtener_libros():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = "SELECT ISBN, titulo, autores, editorial, anio_publicacion, num_ejemplar from public.libro ORDER BY ISBN"
             cursor.execute(query)
             registros = cursor.fetchall()
             nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
