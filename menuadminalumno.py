@@ -51,3 +51,4 @@ def mostrar_menu_admin_alumno():
             st.dataframe(df_alumnos, use_container_width=True, hide_index=True)
         else:
             st.info("Actualmente no hay alumnos registrados en la base de datos.")
+            
