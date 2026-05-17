@@ -35,11 +35,11 @@ def mostrar_menu_libros():
                 else:
                     exito = registrar_libros(ISBN, titulo, autores, editorial, anio_publicacion, num_ejemplar)
                     if exito:
-                        st.success(f"Libro '{titulo}' registrado correctamente.")
+                        st.success(f"Libro '{titulo}' (ejemplar {num_ejemplar}) registrado correctamente.")
                     else:
                         st.error("Error al registrar en la base de datos. Verifica que el ISBN no esté repetido.")
     elif opcion == "Consulta General":
-        st.subheader("Direcctorio General de Alumnos")
+        st.subheader("Direcctorio General de Libros")
         datos, columnas = obtener_libros()
         if datos:
             df_libros = pd.DataFrame(datos, columns=columnas)

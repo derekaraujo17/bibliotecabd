@@ -17,12 +17,14 @@ def mostrar_login():
     contrasena = st.text_input("Ingresa tu contraseña", type="password") 
 
     if st.button("Iniciar Sesión"):
-        rol_encontrado = validar_usuario(usuario, contrasena)
-        if rol_encontrado:
-            st.session_state["logueado"] = True
-            st.session_state["usuario"] = usuario
-            st.session_state["rol"] = rol_encontrado
-            st.session_state["pantalla_actual"] = "principal"
-            st.rerun()
-        else:
-            st.error("Usuario o contraseña incorrectos.")
+        if usuario and contrasena:
+            rol_encontrado,codigo_emp = validar_usuario(usuario, contrasena)
+            if rol_encontrado:
+                st.session_state["logueado"] = True
+                st.session_state["usuario"] = usuario
+                st.session_state["rol"] = rol_encontrado
+                st.session_state["codigo_empleado"] = codigo_emp
+                st.session_state["pantalla_actual"] = "principal"
+                st.rerun()
+            else:
+                st.error("Usuario o contraseña incorrectos.")

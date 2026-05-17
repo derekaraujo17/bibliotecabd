@@ -7,6 +7,8 @@ from database import inicializar_tablas
 from menuadminalumno import mostrar_menu_admin_alumno
 from menuadminprofesor import mostrar_menu_admin_profesor
 from menulibros import mostrar_menu_libros
+from menuprestamos import mostrar_menu_prestamos
+
 load_dotenv()
 inicializar_tablas()
 st.set_page_config(page_title="Biblioteca", layout="wide")
@@ -33,3 +35,5 @@ elif st.session_state["pantalla_actual"] == "menuadminprofesor":
     mostrar_menu_admin_profesor()
 elif st.session_state["pantalla_actual"] == "menulibros":
     mostrar_menu_libros()
+elif st.session_state["pantalla_actual"] == "menuprestamos":
+    mostrar_menu_prestamos()
