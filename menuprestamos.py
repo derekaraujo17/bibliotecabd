@@ -1,6 +1,6 @@
 import streamlit as st
 from helpers import render_header
-from database import registrar_prestamo,obtener_libros,obtener_alumnos,obtener_profesores,obtener_empleados
+from database import registrar_prestamo,obtener_libros_disponibles,obtener_alumnos,obtener_profesores,obtener_prestamos
 import pandas as pd
 import datetime
 
@@ -17,7 +17,7 @@ def mostrar_menu_prestamos():
                           ["---","Registrar préstamo","Devolver préstamo","Consulta de préstamo","Consultas de préstamos"])
     if opcion == "Registrar préstamo":
         st.subheader("Registro de préstamos")
-        libros_bd, columnas = obtener_libros()
+        libros_bd, columnas = obtener_libros_disponibles()
         if not libros_bd:
             st.warning("No hay libros registrados en el catálogo aún.")
             return
@@ -101,3 +101,12 @@ def mostrar_menu_prestamos():
                             st.success(f"Préstamo registrado con éxito. Fecha límite de entrega: {fecha_limite.strftime('%d/%m/%Y')}")
                         else:
                             st.error(f"Ocurrieron {errores} al registrar los libros del préstamo en la base de datos")    
+    
+    elif opcion == "Consultas de préstamos":
+        st.subheader("Direcctorio general de préstamos")
+        datos,columnas = obtener_prestamos()
+        if datos:
+            df_prestamos = pd.DataFrame(datos,columns=columnas)
+            st.dataframe(df_prestamos, use_container_width=True,hide_index=True)
+        else:
+            st.info("Actualmente no hay préstamos registrados en la base de datos.")

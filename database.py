@@ -309,3 +309,44 @@ def obtener_libros():
             cursor.close()
             conexion.close()
     return None, None
+
+def obtener_libros_disponibles():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """SELECT ISBN, titulo, autores, editorial, anio_publicacion, num_ejemplar FROM public.libro 
+                WHERE NOT EXISTS (SELECT 1 FROM public.prestamo WHERE public.prestamo.isbn_libro = public.libro.ISBN 
+                      AND public.prestamo.ejemplar_libro = public.libro.num_ejemplar AND public.prestamo.estatus = 'Activo')
+                ORDER BY ISBN;
+            """
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
+            return registros, nombres_columnas
+        except Exception as e:
+            print(f"Error al consultar disponibles: {e}")
+            return None, None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None, None
+
+def obtener_prestamos():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = "SELECT codigo_prestamo, isbn_libro, ejemplar_libro, codigo_empleado, codigo_alumno,codigo_profesor,fecha_prestamo,fecha_entrega_limite,fecha_devolucion,estatus,multa FROM public.prestamo ORDER BY codigo_prestamo;"
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            nombres_columnas = [desc[0].capitalize() for desc in cursor.description]
+
+            return registros, nombres_columnas
+        except Exception as e:
+            print(f"Error al consultar: {e}")
+            return None, None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None, None            
