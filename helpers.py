@@ -60,7 +60,7 @@ def enviar_correo_multa(correo_destino, ruta_pdf):
         with open(ruta_pdf, 'rb') as f:
             pdf_data = f.read()
         
-        msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='multa_retraso.pdf')
+        msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='multa.pdf')
     except FileNotFoundError:
         print("Error: No se encontró el archivo PDF para adjuntar.")
         return False
