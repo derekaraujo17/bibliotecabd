@@ -188,9 +188,9 @@ def mostrar_menu_prestamos():
                                     with st.spinner("Enviando el correo al usuario..."):
                                         correo_enviado = enviar_correo_multa(correo_sol, archivo_pdf)
                                         if correo_enviado:
-                                            st.success(f"📧 Correo enviado exitosamente a: {correo_sol}")
+                                            st.success(f"Correo enviado exitosamente a: {correo_sol}")
                                         else:
-                                            st.error("❌ Ocurrió un problema al enviar el correo. Verifica las credenciales.")
+                                            st.error("Ocurrió un problema al enviar el correo. Verifica las credenciales.")
 
                                 with open(archivo_pdf, "rb") as file:
                                     st.download_button("Descargar PDF de multa", data=file, file_name=archivo_pdf, mime="application/pdf")
