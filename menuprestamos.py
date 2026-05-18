@@ -1,6 +1,6 @@
 import streamlit as st
-from helpers import render_header
-from database import registrar_prestamo,obtener_libros_disponibles,obtener_alumnos,obtener_profesores,obtener_prestamos
+from helpers import render_header,enviar_correo_multa
+from database import registrar_prestamo,obtener_libros_disponibles,obtener_alumnos,obtener_profesores,obtener_prestamos,obtener_prestamos_activos,procesar_devolucion
 import pandas as pd
 import datetime
 
@@ -110,3 +110,67 @@ def mostrar_menu_prestamos():
             st.dataframe(df_prestamos, use_container_width=True,hide_index=True)
         else:
             st.info("Actualmente no hay préstamos registrados en la base de datos.")
+
+    elif opcion == "Devolver préstamo":
+        st.subheader("Devolución de libros")
+        prestamos_activos = obtener_prestamos_activos()
+        if not prestamos_activos:
+            st.info("No hay préstamos activos en este momento.")
+            return
+        
+        diccionario_prestamos = {
+            p[0]: f"Folio {p[0]} - {p[1]} (Libro: {p[2]} | Ejemplar: {p[3]})"
+            for p in prestamos_activos
+        }
+
+        codigo_seleccionado = st.selectbox(
+            "Selecciona el préstamo a devolver:",
+            options=list(diccionario_prestamos.keys()),
+            format_func=lambda x: diccionario_prestamos[x]
+        )
+
+        prestamo_actual = next(p for p in prestamos_activos if p[0] == codigo_seleccionado)
+        nombre_sol = prestamo_actual[1]
+        titulo_lib = prestamo_actual[2]
+        ejemplar_lib = prestamo_actual[3]
+        fecha_limite = prestamo_actual[4]
+        tipo_sol = prestamo_actual[5]
+        correo_sol = prestamo_actual[6]
+
+        st.write(f"**Fecha límite estipulada:** {fecha_limite.strftime('%d/%m/%Y')}")
+        with st.form("form_devolucion"):
+            fecha_devolucion = st.date_input("Fecha real de devolución:",value=datetime.date.today(),format="DD/MM/YYYY")
+            submit_devolucion = st.form_submit_button("Confirmar devolución")
+
+        if submit_devolucion:
+            diferencia_dias = (fecha_devolucion - fecha_limite).days
+            multa_total = 0.00
+            dias_retraso = 0
+            if diferencia_dias > 0:
+                dias_retraso = diferencia_dias
+                tarifa = 5 if tipo_sol == 'Alumno' else 10
+                multa_total = dias_retraso * tarifa
+                st.warning(f"El préstamo se devolvió con {dias_retraso} días de retraso. Multa generada: ${multa_total}")
+            else:
+                st.success("Préstamo devuelto a tiempo. No hay multas.")
+                
+            exito = procesar_devolucion(codigo_seleccionado,fecha_devolucion,multa_total)
+
+            if exito:
+                st.success("¡Devolución registrada correctamente en el sistema!")
+                if multa_total > 0:
+                    titulo_completo = f"{titulo_lib} (Ej. {ejemplar_lib})"
+                    from generadorpdf import generar_recibo_multa
+                    archivo_pdf = generar_recibo_multa(nombre_sol,titulo_completo,dias_retraso,multa_total)
+                    st.info("Generando archivo PDF de la multa...")
+                    if correo_sol:
+                        with st.spinner("Enviando el correo al usuario..."):
+                            correo_enviado = enviar_correo_multa(correo_sol,archivo_pdf)
+                            if correo_enviado:
+                                st.success(f"Correo enviado exitosamente a: {correo_sol}")
+                            else:
+                                st.error("Ocurrió un problema al enviar el correo. Verifica las credenciales.")
+                    with open(archivo_pdf, "rb") as file:
+                        st.download_button("Descargar PDF de multa",data=file,file_name=archivo_pdf,mime="application/pdf")
+            else:
+                st.error("Ocurrió un error al actualizar la base de datos.")

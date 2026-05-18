@@ -350,3 +350,46 @@ def obtener_prestamos():
             cursor.close()
             conexion.close()
     return None, None            
+
+def obtener_prestamos_activos():
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """SELECT p.codigo_prestamo, 
+            COALESCE(a.nombre,pr.nombre) AS nombre_solicitante,l.titulo, p.ejemplar_libro, p.fecha_entrega_limite,
+            CASE WHEN p.codigo_alumno IS NOT NULL THEN 'Alumno' ELSE 'Profesor' END AS tipo_solicitante,
+            COALESCE(a.correo, pr.correo) AS correo
+            FROM public.prestamo p
+            LEFT JOIN public.alumno a ON p.codigo_alumno = a.codigo
+            LEFT JOIN public.profesor pr ON p.codigo_profesor = pr.codigo
+            JOIN public.libro l ON p.isbn_libro = l.ISBN AND p.ejemplar_libro = l.num_ejemplar
+            WHERE p.estatus = 'Activo'
+            ORDER BY p.codigo_prestamo;"""
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Error al obtener préstamos activos: {e}")
+            return None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None
+
+def procesar_devolucion(codigo_prestamo,fecha_devolucion,multa):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            query = """UPDATE public.prestamo SET fecha_devolucion = %s, estatus = 'Devuelto', multa = %s
+                       WHERE codigo_prestamo = %s"""
+            cursor.execute(query,(fecha_devolucion,multa,codigo_prestamo))
+            conexion.commit()
+            return True
+        except Exception as e:
+            print(f"Error al procesar devolución: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False

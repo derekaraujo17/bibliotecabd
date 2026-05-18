@@ -1,6 +1,8 @@
 import streamlit as st
 import base64
 import os
+import smtplib
+from email.message import EmailMessage
 
 def obtener_imagen_base64(nombre_archivo):
     ruta_actual = os.path.dirname(__file__)
@@ -33,3 +35,41 @@ def render_header():
 
     st.markdown(f"""
     <div class="custom-header"><img src="{img_b64}" class="logo" alt="Logo Biblioteca"><span class="title">Buhoblioteca</span><div class="user-info">Logueado como: <b>{usuario_actual}</b></div></div><div class="espacio-contenido"></div>""", unsafe_allow_html=True)
+
+def enviar_correo_multa(correo_destino, ruta_pdf):
+    remitente = os.getenv("EMAIL_USER") 
+    password = os.getenv("EMAIL_PASS")  
+
+    msg = EmailMessage()
+    msg['Subject'] = 'Aviso de Multa - Buhoblioteca'
+    msg['From'] = remitente
+    msg['To'] = correo_destino
+    
+    cuerpo = """
+    Estimado usuario,
+    
+    Adjunto a este correo encontrará el recibo detallado de la multa generada 
+    por la devolución tardía del material bibliográfico.
+    
+    Atentamente,
+    Administración de Buhoblioteca.
+    """
+    msg.set_content(cuerpo)
+
+    try:
+        with open(ruta_pdf, 'rb') as f:
+            pdf_data = f.read()
+        
+        msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='multa_retraso.pdf')
+    except FileNotFoundError:
+        print("Error: No se encontró el archivo PDF para adjuntar.")
+        return False
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(remitente, password)
+            server.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Error al enviar el correo: {e}")
+        return False
